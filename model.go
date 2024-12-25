@@ -1,23 +1,63 @@
 package forzatelemetry
 
+// Type of car drvietrain, that shows which wheels are driven.
 type DrivetrainType int32
 
 const (
+	// Front wheel drive
 	DrivetrainTypeFWD DrivetrainType = 0
+	// Rear wheel drive
 	DrivetrainTypeRWD DrivetrainType = 1
+	// All wheel drive
 	DrivetrainTypeAWD DrivetrainType = 2
 )
 
+// Car performance index (100-999 worst to best car).
+type PerformanceIndex int32
+
+func (pi PerformanceIndex) Class() CarClass {
+	if pi < 100 || pi > 999 {
+		panic("unexpected performance index")
+	}
+	if pi <= 500 {
+		return CarClassD
+	}
+	if pi <= 600 {
+		return CarClassC
+	}
+	if pi <= 700 {
+		return CarClassB
+	}
+	if pi <= 800 {
+		return CarClassA
+	}
+	if pi <= 900 {
+		return CarClassS1
+	}
+	if pi <= 998 {
+		return CarClassS2
+	}
+	return CarClassX
+}
+
+// Car performance class
 type CarClass int32
 
 const (
-	CarClassD  CarClass = 0
-	CarClassC  CarClass = 1
-	CarClassB  CarClass = 2
-	CarClassA  CarClass = 3
+	// 100-500 performance index
+	CarClassD CarClass = 0
+	// 501-600 performance index
+	CarClassC CarClass = 1
+	// 601-700 performance index
+	CarClassB CarClass = 2
+	// 701-800 performance index
+	CarClassA CarClass = 3
+	// 801-900 performance index
 	CarClassS1 CarClass = 4
+	// 901-998 performance index
 	CarClassS2 CarClass = 5
-	CarClassX  CarClass = 6
+	// 999 performance index
+	CarClassX CarClass = 6
 )
 
 // Values that are three dimensional.
@@ -40,7 +80,7 @@ type ForzaData struct {
 	// True if the game is not paused.
 	IsRaceOn bool
 	// Milliseconds since the game has started.
-	TimestampMS uint32
+	TimestampMS MilliSecond
 	// Maximum engine speed (1/min).
 	EngineMaxRpm float32
 	// Idle engine speed (1/min).
@@ -48,23 +88,23 @@ type ForzaData struct {
 	// Current engine speed (1/min).
 	CurrentEngineRpm float32
 	// Acceleration in car's local space (m/s2).
-	Acceleration ThreeDimensional[float32]
+	Acceleration ThreeDimensional[MeterPerSecond]
 	// Velocity in car's local space (m/s).
-	Velocity ThreeDimensional[float32]
+	Velocity ThreeDimensional[MeterPerSecond]
 	// Angular velocity in car's local space (rad/s).
-	AngularVelocity ThreeDimensional[float32]
+	AngularVelocity ThreeDimensional[Radian]
 	// Yaw in global space (rad).
-	Yaw float32
+	Yaw Radian
 	// Pitch in global space (rad).
-	Pitch float32
+	Pitch Radian
 	// Roll in global space (rad).
-	Roll float32
+	Roll Radian
 	// Susepension travel (0-1 max strech to max compression).
 	NormalizedSuspensionTravel Wheel[float32]
 	// Tire slip ratio (above 1 means loss of grip).
 	TireSlipRatio Wheel[float32]
 	// Wheel roration speed (rad/s)
-	WheelRotationSpeed Wheel[float32]
+	WheelRotationSpeed Wheel[Radian]
 	// If the wheel is on rumble strip.
 	WheelOnRumbleStrip Wheel[bool]
 	// Wheel in puddle depth (0-1 not in puddle to in the deepest puddle).
@@ -76,41 +116,41 @@ type ForzaData struct {
 	// Tire normalized combined slip (above 1 means loss of grip).
 	TireCombinedSlip Wheel[float32]
 	// Suspension travel (m).
-	SuspensionTravelMeters Wheel[float32]
+	SuspensionTravelMeters Wheel[Meter]
 	// Unique ID of the car make/model
 	CarOrdinal int32
 	// Car class
 	CarClass CarClass
 	// Performance index (100-999 worst to best car)
-	CarPerformanceIndex int32
+	CarPerformanceIndex PerformanceIndex
 	// Drivetrain type
 	DrivetrainType DrivetrainType
 	// Number of cylinders
 	NumCylinders int32
 	// Car global position.
-	Position ThreeDimensional[float32]
+	Position ThreeDimensional[Meter]
 	// Car speed (m/s).
-	Speed float32
+	Speed MeterPerSecond
 	// Power (W).
-	Power float32
+	Power Watt
 	// Torque (Nm).
-	Torque float32
+	Torque NewtonMeter
 	// Tire temperature (F).
-	TireTemp Wheel[float32]
+	TireTemp Wheel[Fahrenheit]
 	// Turbo boost (Psi).
-	Boost float32
+	Boost PoundPerSuqaredInch
 	// Remaining fuel (0-1 empty to full).
 	Fuel float32
 	// Distance traveled during current race (m).
-	DistanceTraveled float32
+	DistanceTraveled Meter
 	// Best lap time (s).
-	BestLap float32
+	BestLap Second
 	// Last lap time (s).
-	LastLap float32
+	LastLap Second
 	// Current lap time (s).
-	CurrentLap float32
+	CurrentLap Second
 	// Current race time (s).
-	CurrentRaceTime float32
+	CurrentRaceTime Second
 	// Lap number.
 	LapNumber uint16
 	// Race position.
